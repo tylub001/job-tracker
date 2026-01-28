@@ -24,13 +24,15 @@ my $dbh = DBI->connect(
 );
 
 # -----------------------------
-# Fetch job + customer info
+# Fetch job + customer + employee info
 # -----------------------------
 my $sql = q{
     SELECT j.id, j.job_name, j.status, j.due_date,
-           c.name AS customer_name, c.email, c.phone
+           c.name AS customer_name, c.email, c.phone,
+           e.name AS employee_name, e.email AS employee_email
     FROM jobs j
     JOIN customers c ON j.customer_id = c.id
+    LEFT JOIN employees e ON j.employee_id = e.id
     WHERE j.id = ?
 };
 
@@ -42,6 +44,7 @@ my $job = $sth->fetchrow_hashref;
 if (!$job) {
     die "Job ID $job_id not found.\n";
 }
+
 
 # -----------------------------
 # Create PDF
@@ -63,10 +66,12 @@ my $y = 720;
 
 sub line {
     my ($label, $value) = @_;
+    my $safe_value = defined $value && $value ne '' ? $value : 'N/A';
     $text->translate(50, $y);
-    $text->text("$label: $value");
+    $text->text("$label: $safe_value");
     $y -= 20;
 }
+
 
 line("Job ID",         $job->{id});
 line("Customer",       $job->{customer_name});
@@ -75,6 +80,9 @@ line("Status",         $job->{status});
 line("Due Date",       $job->{due_date} // 'N/A');
 line("Customer Email", $job->{email});
 line("Customer Phone", $job->{phone});
+line("Assigned Employee", $job->{employee_name} // 'Unassigned');
+line("Employee Email",    $job->{employee_email} // 'N/A');
+
 
 # -----------------------------
 # Save PDF
