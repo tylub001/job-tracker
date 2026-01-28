@@ -37,12 +37,30 @@ Ensures PDFs are structurally sound before processing.
 
 ---
 
+### Cron Automation
+Automates daily generation of all job tickets using scheduled scripts and logging at 3:55PM
+
+- Uses run_generate_all.sh as the cron entrypoint
+- Calls generate_all_tickets.pl to build all PDF job tickets
+- Writes timestamped logs to a dedicated logs/ directory
+- Integrates cleanly with batch workflows and automation pipelines
+
+### Logs Folder
+Stores all cron‑generated logs for auditing and debugging.
+
+- Automatically creates daily log files
+- Captures start/end timestamps, errors, and exit codes
+- Helps monitor long‑running or scheduled tasks
+
+---
+
 ## Tech Stack
 
 - **Perl** (PDF::API2, DBI)  
 - **MySQL** (schema design, user permissions, plugin configuration)  
 - **WSL / Ubuntu**  
 - **CLI tooling & automation**  
+- **Cron (scheduled automation)**
 
 ---
 
